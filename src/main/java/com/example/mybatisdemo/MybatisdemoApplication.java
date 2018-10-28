@@ -5,8 +5,8 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 @Slf4j
-@MapperScan("com.example.mybatisdemo.dao")
 @SpringBootApplication
+@MapperScan("com.example.mybatisdemo.persistence.auto.mapper")
 public class MybatisdemoApplication {
 
     public static void main(String[] args) {
