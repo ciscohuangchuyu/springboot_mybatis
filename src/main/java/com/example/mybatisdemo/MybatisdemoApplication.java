@@ -4,9 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+
 @Slf4j
 @SpringBootApplication
-@MapperScan("com.example.mybatisdemo.persistence.auto.mapper")
+@MapperScan(value={"com.example.mybatisdemo.persistence.auto.mapper","com.example.mybatisdemo.persistence.ext.mapper"})
 public class MybatisdemoApplication {
 
     public static void main(String[] args) {
@@ -14,6 +16,7 @@ public class MybatisdemoApplication {
         SpringApplication.run(MybatisdemoApplication.class, args);
         log.info(notBug());
     }
+
     private static String notBug (){
         String str = "\n" +
                 "/**\n" +

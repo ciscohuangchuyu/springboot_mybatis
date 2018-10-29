@@ -20,16 +20,16 @@ import java.util.concurrent.Executors;
  */
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AddDataTest {
     @Autowired
     private UserMapper userMapper;
     private static int count = 0;
     @Test
     public void run1() {
-        ExecutorService service = Executors.newFixedThreadPool(55);
+        ExecutorService service = Executors.newFixedThreadPool(5);
         long start = System.currentTimeMillis();
-        for (int i =0; i < 55; i++) {
+        for (int i =0; i < 5; i++) {
             User user = new User();
             user.setPassword("123456");
             user.setPhone("18312755572");

@@ -115,7 +115,8 @@
                 </configuration>
             </plugin>
         </plugins>
-        <!--<resources>
+        <!--配置识别非resource文件下的配置文件-->
+        <resources>
             <resource>
                 <directory>src/main/java</directory>
                 <includes>
@@ -132,7 +133,7 @@
                     <include>**/*</include>
                 </includes>
             </resource>
-        </resources>-->
+        </resources>
     </build>
 
 
