@@ -2,6 +2,7 @@ package com.example.mybatisdemo.test;
 
 import com.example.mybatisdemo.persistence.auto.model.User;
 import com.example.mybatisdemo.persistence.ext.mapper.UserExtMapper;
+import com.github.pagehelper.PageHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,7 +26,9 @@ public class GetTest {
 
     @Test
     public void getUserList() {
+        PageHelper.startPage(1,10);
         List<User> test = userExtMapper.test();
+
         Assert.assertNotNull(test);
         log.info(test.get(0).toString());
     }

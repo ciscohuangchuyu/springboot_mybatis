@@ -5,11 +5,9 @@ import com.example.mybatisdemo.persistence.auto.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import sun.print.resources.serviceui;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,16 +22,16 @@ import java.util.concurrent.Executors;
 public class AddDataTest {
     @Autowired
     private UserMapper userMapper;
-    private static int count = 0;
     @Test
     public void run1() {
         ExecutorService service = Executors.newFixedThreadPool(5);
         long start = System.currentTimeMillis();
-        for (int i =0; i < 5; i++) {
+        for (int i = 1; i < 5; i++) {
             User user = new User();
             user.setPassword("123456");
             user.setPhone("18312755572");
             user.setUserName("cisco" + i + "号");
+            user.setIsDelete((byte)0);
             service.execute(new AddDataThread(user));
         }
         service.shutdown();

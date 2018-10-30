@@ -1,0 +1,4 @@
+作为基础设施层，Infrastructure为Interfaces、Application和Domain三层提供支撑。
+所有与具体平台、框架相关的实现会在Infrastructure中提供，
+避免三层特别是Domain层掺杂进这些实现，从而“污染”领域模型。
+Infrastructure中最常见的一类设施是对象持久化的具体实现。

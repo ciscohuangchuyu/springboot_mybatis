@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.example.mybatisdemo.persistence.ext.mapper.UserExtMapper" >
+    <!--查询所有用户-->
 <select id="test" resultType="com.example.mybatisdemo.persistence.auto.model.User">
-    select * from t_user;
+    select * from t_user
 </select>
+
+    <!--if 测试-->
+    <select id="ifTest" resultType="com.example.mybatisdemo.persistence.auto.model.User" parameterType="com.example.mybatisdemo.persistence.auto.model.User">
+        select * from t_user t
+        <where>
+            <if test="null != t.phone and '' != t.phone">
+                t.phone = #{phone}
+            </if>
+            <if test="null != t.is_delete and '' != t.is_delete">
+                t.is_delete = #{userStatu}
+            </if>
+            <if test="null ! = t.user_name">
+                t.user_name = #{userName}
+            </if>
+        </where>
+    </select>
 </mapper>
