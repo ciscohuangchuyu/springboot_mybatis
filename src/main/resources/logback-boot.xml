@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<configuration>
+<!-- 日志级别从低到高分为TRACE < DEBUG < INFO < WARN < ERROR < FATAL，如果设置为WARN，则低于WARN的信息都不会输出 -->
+<!-- scan:当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true -->
+<!-- scanPeriod:设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。 -->
+<!-- debug:当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。 -->
+<configuration scan="true" scanPeriod="10 seconds">
 
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <!--配置开启 JMXConfigurator,通过jconsle等工具可以查看配置-->
     <jmxConfigurator/>
 
     <springProperty scope="context" name="springAppName" source="spring.application.name"/>
@@ -10,16 +15,20 @@
               value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([${springAppName:-},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}]){yellow} %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
 
     <!-- 控制台输出 -->
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!--此日志appender是为开发使用，只配置最底级别，控制台输出的日志级别是大于或等于此级别的日志信息-->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
         <encoder>
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
         </encoder>
     </appender>
     <!-- 文件输出  -->
-    <appender name="APP-OUT"
+    <appender name="OUT-FILE"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/${springAppName:-}/app.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/${springAppName:-}/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxHistory>60</maxHistory>
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
@@ -27,81 +36,19 @@
             </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
 
-        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-            <!-- 使用自定义的JsonFactory的装饰器,禁用jackson对非ascii码字符进行escape编码 -->
-            <jsonFactoryDecorator class="com.sq580.ms.common.component.log.MyJsonFactoryDecorator"/>
-            <providers>
-                <timestamp>
-                    <timeZone>UTC</timeZone>
-                </timestamp>
-                <pattern>
-                    <pattern>
-                        {
-                        "timestamp":"%d{yyyy-MM-dd HH:mm:ss.SSS}",
-                        "level": "%level",
-                        "pid": "${PID:-}",
-                        "thread": "%thread",
-                        "class": "%logger{39}",
-                        "message": "%msg%n%wEx",
-                        "service": "${springAppName:-}",
-                        "trace": "%X{X-B3-TraceId:-}",
-                        "span": "%X{X-B3-SpanId:-}",
-                        "exportable": "%X{X-Span-Export:-}"
-                        }
-                    </pattern>
-                </pattern>
-            </providers>
+        <!--日志文件输出格式-->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <charset>UTF-8</charset> <!-- 此处设置字符集 -->
         </encoder>
-       
+
     </appender>
 
-    <!--请求日志-->
-    <appender name="REQUEST-ACCESS-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_PATH}/${springAppName:-}/request-access.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxHistory>60</maxHistory>
-            <timeBasedFileNamingAndTriggeringPolicy
-                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>200MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
-        </rollingPolicy>
-        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-            <!-- 使用自定义的JsonFactory的装饰器,禁用jackson对非ascii码字符进行escape编码 -->
-            <jsonFactoryDecorator class="com.sq580.ms.common.component.log.MyJsonFactoryDecorator"/>
-            <providers>
-                <timestamp>
-                    <timeZone>UTC</timeZone>
-                </timestamp>
-                <pattern>
-                    <pattern>
-                        {
-                        "timestamp":"%d{yyyy-MM-dd HH:mm:ss.SSS}",
-                        "level": "%level",
-                        "pid": "${PID:-}",
-                        "thread": "%thread",
-                        "class": "%logger{39}",
-                        "message": "%msg%n%wEx",
-                        "service": "${springAppName:-}",
-                        "trace": "%X{X-B3-TraceId:-}",
-                        "span": "%X{X-B3-SpanId:-}",
-                        "exportable": "%X{X-Span-Export:-}"
-                        }
-                    </pattern>
-                </pattern>
-            </providers>
-        </encoder>
-    </appender>
-
-    <logger name="request_access_log" level="INFO" additivity="false">
-        <appender-ref ref="REQUEST-ACCESS-OUT"/>
-        <appender-ref ref="STDOUT"/>
-    </logger>
 
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="CONSOLE"/>
 
-        <appender-ref ref="APP-OUT"/>
+        <appender-ref ref="OUT-FILE"/>
     </root>
-
 
 </configuration>
